@@ -7,6 +7,11 @@
     "default_icon": "lazy.png",
     "default_popup": "popup.html",
     "default_title": "Let's be lazy :)"
-  }
+  },
 
+   "permissions": [
+    "activeTab",
+    "https://www.reddit.com/*",
+    "http://www.reddit.com/*"
+  ]
 }
