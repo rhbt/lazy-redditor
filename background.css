@@ -5,3 +5,14 @@ img {
   width: auto;
   height: auto;
 }
+
+.gyfcat {
+	position: relative;
+	padding-bottom: 100%
+}
+
+iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
