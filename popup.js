@@ -1,3 +1,5 @@
+const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng"];
+
 function getCurrentTabUrl(callback) {
 
   var queryInfo = {
@@ -21,8 +23,6 @@ function formatURL(url) {
 	return url;
 }
 
-const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng"];
-
 function formatImageURL(url, thumb) {
 	const lastFive = url.substr(url.length - 5).toLowerCase();
 	const posOfFormat = thumb.lastIndexOf(".");
@@ -36,36 +36,37 @@ function formatImageURL(url, thumb) {
 	return url;
 }
 
-function isNotImage(url) {
-	const lastFour = url.substr(url.length - 4).toLowerCase();
-	const lastFive = url.substr(url.length - 5).toLowerCase();
-	if (imageFormats.indexOf(lastFour) || imageFormats.indexOf(lastFive)) {
-		return false;
-	}
-	return true;
-}
-
-
 function filterImages(obj) {
-	if (obj.data.selftext_html !== null || obj.data.url.match(/imgur.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+/) !== null) {
+	if (obj.data.selftext_html !== null || 
+		  obj.data.url.match(/imgur.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+/) !== null) {
 		return false;
 	}
 	return true;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
 
-  getCurrentTabUrl(function(url) {
+	document.getElementById("pics").addEventListener('click', function() {
+	  getCurrentTabUrl(function(url) {
+	  	$.getJSON(formatURL(url) + ".json", function(json) {
+	  		$.each(json.data.children, function(i, obj) {
+	  			if (filterImages(obj)) {
+	  				$("#result").append("<img src='" + formatImageURL(obj.data.url, obj.data.thumbnail) + "''>");
+	  			}
+	  		})
+			});
+	  });
+	});
 
-  	$.getJSON(formatURL(url) + ".json", function(json) {
-
-  		$.each(json.data.children, function(i, obj) {
-
-  			if (filterImages(obj)) {
-  				$("#result").append("<img src='" + formatImageURL(obj.data.url, obj.data.thumbnail) + "''>");
-  			}
-
-  		})
-		});
-  });
-});
+	document.getElementById("comments").addEventListener('click', function() { 
+		getCurrentTabUrl(function(url) {
+			let counter = 1;
+			$.getJSON(formatURL(url) + ".json", function(json) {
+				$.each(json[1].data.children, function(i, obj) {
+	  			$("#result").append("<div class='comment'>" + counter + ". " + obj.data.body + "</div>");
+	  			counter++;
+	  		})
+			})
+		})
+	})
+})

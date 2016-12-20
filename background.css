@@ -16,3 +16,8 @@ iframe {
 	top: 0;
 	left: 0;
 }
+
+.comment {
+	width: 800px;
+	margin-bottom: 30px;
+}
