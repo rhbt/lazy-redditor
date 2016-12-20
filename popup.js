@@ -30,7 +30,7 @@ function formatImageURL(url, thumb) {
 	if (lastFive == ".gifv") {
 		return url.slice(0, -1);
 	}
-	else if (url.match(/imgur.com\/[a-zA-Z0-9]+$/) && imageFormats.indexOf(thumbFormat)) {
+	else if (url.match(/imgur.com\/[a-zA-Z0-9]+$/) && imageFormats.indexOf(thumbFormat) !== -1) {
 		return url + thumbFormat;
 	}
 	return url;
@@ -42,6 +42,31 @@ function filterImages(obj) {
 		return false;
 	}
 	return true;
+}
+
+function extractImageLink(text) {
+	if (text.match(/\[.+\]\(.+\)/)) {
+		const start = text.indexOf("(") + 1;
+		const end = text.indexOf(")");
+		return addImageFormat(text.substr(start, end - start));
+	}
+	return addImageFormat(text);
+}
+
+function addImageFormat(url) {
+	const posOfFormat = url.lastIndexOf(".");
+	const format = url.substr(posOfFormat);
+	if (imageFormats.indexOf(format) !== -1) {
+		return url;
+	}
+	return url + ".jpg";
+}
+
+function psbInURL(url) {
+	if (url.match(/reddit\.com\/r\/photoshopbattles/)) {
+		return true;
+	}
+	return false;
 }
 
 $(document).ready(function() {
@@ -60,12 +85,24 @@ $(document).ready(function() {
 
 	document.getElementById("comments").addEventListener('click', function() { 
 		getCurrentTabUrl(function(url) {
+			const inPSB = psbInURL(url);
 			let counter = 1;
 			$.getJSON(formatURL(url) + ".json", function(json) {
-				$.each(json[1].data.children, function(i, obj) {
-	  			$("#result").append("<div class='comment'>" + counter + ". " + obj.data.body + "</div>");
-	  			counter++;
-	  		})
+				if (inPSB) {
+					$.each(json[1].data.children, function(i, obj) {
+						if (obj.data.body !== "[deleted]") {
+							$("#result").append("<img src='" + extractImageLink(obj.data.body) + "''>");
+		  				counter++;
+						}
+		  			
+	  			})
+				}
+				else {
+					$.each(json[1].data.children, function(i, obj) {
+		  			$("#result").append("<div class='comment'>" + counter + ". " + obj.data.body + "</div>");
+		  			counter++;
+	  			})
+				}
 			})
 		})
 	})
