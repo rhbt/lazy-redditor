@@ -37,37 +37,27 @@ const redditApi = (function redditApiHelper() {
 	    return false;
 	}
 
-	function addImageFormat(url) {
-		const posOfFormat = url.lastIndexOf(".");
-		const format = url.substr(posOfFormat);
-		if (imageFormats.indexOf(format) !== -1) {
-			return url;
-		}
-		return url + ".jpg";
-	}
-	
 	function extractImageLink(text) {
-		if (text.match(/\[.+\]\(.+\)/)) {
-			const start = text.indexOf("(") + 1;
-			const end = text.indexOf(")");
-			return addImageFormat(text.substr(start, end - start));
-		}
-		return addImageFormat(text);
+		const start = text.indexOf("(") + 1;
+		const end = text.indexOf(")");
+		return formatImageUrl(text.substr(start, end - start));
 	}
 
 	function psbInUrl(url) {
-		if (url.match(/reddit\.com\/r\/photoshopbattles/)) {
-			return true;
-		}
-		return false;
+		return url.match(/reddit\.com\/r\/photoshopbattles\//) !== null;
+	}
+
+	function htmlDecode(input) {
+	  const doc = new DOMParser().parseFromString(input, "text/html");
+	  return doc.documentElement.textContent;
 	}
 
 	return {
 		getCurrentTabUrl: getCurrentTabUrl,
 		formatImageUrl: formatImageUrl,
 		extractImageLink: extractImageLink,
-		addImageFormat: addImageFormat,
-		psbInUrl: psbInUrl
+		psbInUrl: psbInUrl,
+		htmlDecode: htmlDecode
 	}
 
 })();

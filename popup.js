@@ -29,24 +29,18 @@ var counter = 0;
 	});
 
 	document.getElementById("comments").addEventListener('click', function() { 
+		
 		redditApi.getCurrentTabUrl(function(url) {
 			const psbThread = redditApi.psbInUrl(url);
-			let counter = 1;
 			$.getJSON(url + ".json", function(json) {
-				if (psbThread) {
 					$.each(json[1].data.children, function(i, obj) {
-						if (obj.data.body !== "[deleted]") {
-							$("#result").append("<img src='" + redditApi.extractImageLink(obj.data.body) + "''>");
-		  				counter++;
+						if (!psbThread) {
+							$("#result").append("<li class='comment'>" + (i+1) + ". " + redditApi.htmlDecode(obj.data.body_html) + "</li>");
+						}
+						else if (psbThread && obj.data.body !== "[deleted]") {
+							$("#result").append("<img src='" + redditApi.extractImageLink(obj.data.body) + "'>");
 						}
 	  			})
-				}
-				else {
-					$.each(json[1].data.children, function(i, obj) {
-		  			$("#result").append("<div class='comment'>" + counter + ". " + obj.data.body + "</div>");
-		  			counter++;
-	  			});
-				}
 			});
 		});
 	});
