@@ -1,109 +1,38 @@
-const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng"];
-
-function getCurrentTabUrl(callback) {
-
-  var queryInfo = {
-    active: true,
-    currentWindow: true
-  };
-
-  chrome.tabs.query(queryInfo, function(tabs) {
-
-    var tab = tabs[0];
-    var url = tab.url;
-    console.assert(typeof url == 'string', 'tab.url should be a string');
-    callback(url);
-  });
-}
-
-function formatURL(url) {
-	if (url.slice(-1) !== "/") {
-		return url + "/";
-	}
-	return url;
-}
-
-function formatImageURL(url, thumb) {
-	const lastFive = url.substr(url.length - 5).toLowerCase();
-	const posOfFormat = thumb.lastIndexOf(".");
-	const thumbFormat = thumb.substr(posOfFormat);
-	if (lastFive == ".gifv") {
-		return url.slice(0, -1);
-	}
-	else if (url.match(/imgur.com\/[a-zA-Z0-9]+$/) && imageFormats.indexOf(thumbFormat) !== -1) {
-		return url + thumbFormat;
-	}
-	return url;
-}
-
-function filterImages(obj) {
-	if (obj.data.selftext_html !== null || 
-		  obj.data.url.match(/imgur.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+/) !== null) {
-		return false;
-	}
-	return true;
-}
-
-function extractImageLink(text) {
-	if (text.match(/\[.+\]\(.+\)/)) {
-		const start = text.indexOf("(") + 1;
-		const end = text.indexOf(")");
-		return addImageFormat(text.substr(start, end - start));
-	}
-	return addImageFormat(text);
-}
-
-function addImageFormat(url) {
-	const posOfFormat = url.lastIndexOf(".");
-	const format = url.substr(posOfFormat);
-	if (imageFormats.indexOf(format) !== -1) {
-		return url;
-	}
-	return url + ".jpg";
-}
-
-function psbInURL(url) {
-	if (url.match(/reddit\.com\/r\/photoshopbattles/)) {
-		return true;
-	}
-	return false;
-}
-
 $(document).ready(function() {
 
 	document.getElementById("pics").addEventListener('click', function() {
-	  getCurrentTabUrl(function(url) {
-	  	$.getJSON(formatURL(url) + ".json", function(json) {
+	  redditApi.getCurrentTabUrl(function(url) {
+	  	$.getJSON(url + ".json", function(json) {
 	  		$.each(json.data.children, function(i, obj) {
-	  			if (filterImages(obj)) {
-	  				$("#result").append("<img src='" + formatImageURL(obj.data.url, obj.data.thumbnail) + "''>");
+	  			if (redditApi.filterImages(obj)) {
+	  				$("#result").append("<img src='" + redditApi.formatImageURL(obj.data.url, obj.data.thumbnail) + "''>");
 	  			}
-	  		})
+	  		});
 			});
 	  });
 	});
 
 	document.getElementById("comments").addEventListener('click', function() { 
-		getCurrentTabUrl(function(url) {
-			const inPSB = psbInURL(url);
+		redditApi.getCurrentTabUrl(function(url) {
+			const inPSB = redditApi.psbInURL(url);
 			let counter = 1;
-			$.getJSON(formatURL(url) + ".json", function(json) {
+			$.getJSON(url + ".json", function(json) {
 				if (inPSB) {
 					$.each(json[1].data.children, function(i, obj) {
 						if (obj.data.body !== "[deleted]") {
-							$("#result").append("<img src='" + extractImageLink(obj.data.body) + "''>");
+							$("#result").append("<img src='" + redditApi.extractImageLink(obj.data.body) + "''>");
 		  				counter++;
 						}
-		  			
 	  			})
 				}
 				else {
 					$.each(json[1].data.children, function(i, obj) {
 		  			$("#result").append("<div class='comment'>" + counter + ". " + obj.data.body + "</div>");
 		  			counter++;
-	  			})
+	  			});
 				}
-			})
-		})
-	})
+			});
+		});
+	});
+
 })
