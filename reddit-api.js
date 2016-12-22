@@ -1,6 +1,6 @@
 const redditApi = (function redditApiHelper() {
 
-	const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng"];
+	const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng", "tiff", "bmp", "gifv"];
 
 	function getCurrentTabUrl(callback) {
 
@@ -17,34 +17,24 @@ const redditApi = (function redditApiHelper() {
 	  });
 	}
 
-	function formatImageURL(url, thumb) {
-		const lastFive = url.substr(url.length - 5).toLowerCase();
-		const posOfFormat = thumb.lastIndexOf(".");
-		const thumbFormat = thumb.substr(posOfFormat);
-		if (lastFive == ".gifv") {
-			return url.slice(0, -1);
-		}
-		else if (url.match(/imgur.com\/[a-zA-Z0-9]+$/) && imageFormats.indexOf(thumbFormat) !== -1) {
-			return url + thumbFormat;
-		}
-		return url;
+	function getImageExtension(url) {
+	  const parts = url.split('.');
+	  let extension = parts[parts.length-1];
+	  if (extension === "gifv") {
+	  	extension = "gif";
+	  }
+	  return "." + extension;
 	}
 
-	function filterImages(obj) {
-		if (obj.data.selftext_html !== null || 
-			  obj.data.url.match(/imgur.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+/) !== null) {
-			return false;
-		}
-		return true;
-	}
-
-	function extractImageLink(text) {
-		if (text.match(/\[.+\]\(.+\)/)) {
-			const start = text.indexOf("(") + 1;
-			const end = text.indexOf(")");
-			return addImageFormat(text.substr(start, end - start));
-		}
-		return addImageFormat(text);
+	function formatImageUrl(url) {
+	    const extension = getImageExtension(url);
+	    if (url.match(/imgur.com\/[a-zA-Z0-9]+$/)) {
+	    	return url + ".jpg";
+	    }
+	    else if (imageFormats.indexOf(extension) !== -1) {
+	      return url;
+	    }
+	    return false;
 	}
 
 	function addImageFormat(url) {
@@ -55,8 +45,17 @@ const redditApi = (function redditApiHelper() {
 		}
 		return url + ".jpg";
 	}
+	
+	function extractImageLink(text) {
+		if (text.match(/\[.+\]\(.+\)/)) {
+			const start = text.indexOf("(") + 1;
+			const end = text.indexOf(")");
+			return addImageFormat(text.substr(start, end - start));
+		}
+		return addImageFormat(text);
+	}
 
-	function psbInURL(url) {
+	function psbInUrl(url) {
 		if (url.match(/reddit\.com\/r\/photoshopbattles/)) {
 			return true;
 		}
@@ -65,11 +64,10 @@ const redditApi = (function redditApiHelper() {
 
 	return {
 		getCurrentTabUrl: getCurrentTabUrl,
-		formatImageURL: formatImageURL,
-		filterImages: filterImages,
+		formatImageUrl: formatImageUrl,
 		extractImageLink: extractImageLink,
 		addImageFormat: addImageFormat,
-		psbInURL: psbInURL
+		psbInUrl: psbInUrl
 	}
 
 })();

@@ -1,11 +1,27 @@
-$(document).ready(function() {
+	function getCurrentTabUrl(callback) {
+		
+	  const queryInfo = {
+	    active: true,
+	    currentWindow: true
+	  };
 
+	  chrome.tabs.query(queryInfo, function(tabs) {
+	    const tab = tabs[0];
+	    const url = tab.url;
+	    console.assert(typeof url == 'string', 'tab.url should be a string');
+	    callback(url);
+	  });
+	}
+
+$(document).ready(function() {
+var counter = 0;
 	document.getElementById("pics").addEventListener('click', function() {
-	  redditApi.getCurrentTabUrl(function(url) {
+	  getCurrentTabUrl(function(url) {
 	  	$.getJSON(url + ".json", function(json) {
 	  		$.each(json.data.children, function(i, obj) {
-	  			if (redditApi.filterImages(obj)) {
-	  				$("#result").append("<img src='" + redditApi.formatImageURL(obj.data.url, obj.data.thumbnail) + "''>");
+	  			const imageUrl = redditApi.formatImageUrl(obj.data.url);
+	  			if (imageUrl) {
+	  				$("#result").append("<img src='" + imageUrl + "''>");
 	  			}
 	  		});
 			});
@@ -14,10 +30,10 @@ $(document).ready(function() {
 
 	document.getElementById("comments").addEventListener('click', function() { 
 		redditApi.getCurrentTabUrl(function(url) {
-			const inPSB = redditApi.psbInURL(url);
+			const psbThread = redditApi.psbInUrl(url);
 			let counter = 1;
 			$.getJSON(url + ".json", function(json) {
-				if (inPSB) {
+				if (psbThread) {
 					$.each(json[1].data.children, function(i, obj) {
 						if (obj.data.body !== "[deleted]") {
 							$("#result").append("<img src='" + redditApi.extractImageLink(obj.data.body) + "''>");
