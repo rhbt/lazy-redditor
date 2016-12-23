@@ -26,10 +26,29 @@ const redditApi = (function redditApiHelper() {
 	  return "." + extension;
 	}
 
-	function formatImageUrl(url) {
+	function getImgurId(url) {
+		const parts = url.split("/");
+		return parts[parts.length-1];
+	}
+
+	function getImageLink(url) {
 	    const extension = getImageExtension(url);
-	    if (url.match(/imgur.com\/[a-zA-Z0-9]+$/)) {
+	    if (url.match(/imgur\.com\/[a-zA-Z0-9]+$/)) {
 	    	return url + ".jpg";
+	    }
+	    else if (url.match(/imgur.com\/a\/[a-zA-Z0-9]+$/)) {
+	    	const id = getImgurId(url);
+	    	getImgurImage(id, "album", function(imageId) {
+	    		$("#result").append("<img src='" + "http://imgur.com/" + imageId + ".jpg" + "'>");
+	    	});
+	    	return false;
+	    }
+	    else if (url.match(/imgur\.com\/gallery\/[a-zA-Z0-9]+$/)) {
+	    	const id = getImgurId(url);
+	    	getImgurImage(id, "gallery", function(imageId) {
+	    		$("#result").append("<img src='" + "http://imgur.com/" + imageId + ".jpg" + "'>");
+	    	})
+	    	return false;
 	    }
 	    else if (imageFormats.indexOf(extension) !== -1) {
 	      return url;
@@ -38,9 +57,14 @@ const redditApi = (function redditApiHelper() {
 	}
 
 	function extractImageLink(text) {
-		const start = text.indexOf("(") + 1;
-		const end = text.indexOf(")");
-		return formatImageUrl(text.substr(start, end - start));
+		if (text.match(/\[.+\]\(.+\)/)) {
+			const start = text.indexOf("(") + 1;
+			const end = text.indexOf(")");
+			return getImageLink(text.substr(start, end - start));	
+		}
+		else {
+			return getImageLink(text);
+		}
 	}
 
 	function psbInUrl(url) {
@@ -52,9 +76,25 @@ const redditApi = (function redditApiHelper() {
 	  return doc.documentElement.textContent;
 	}
 
+	function getImgurImage(id, type, callback) {
+		$.ajax({
+	    	url: "https://api.imgur.com/3/" + type + "/" + id + "/images",
+	        type: "GET",
+	  	    dataType: "json",
+	    	headers: {"Authorization": "Client-ID 329db6d9e5bb5ab"}
+		}).done(function(data) {
+			if (type === "album") {
+				callback(data.data[0].id);
+			}
+			else if (type === "gallery") {
+				callback(data.data[0].id)
+			}
+		});
+	}
+
 	return {
 		getCurrentTabUrl: getCurrentTabUrl,
-		formatImageUrl: formatImageUrl,
+		getImageLink: getImageLink,
 		extractImageLink: extractImageLink,
 		psbInUrl: psbInUrl,
 		htmlDecode: htmlDecode
