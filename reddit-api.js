@@ -1,6 +1,6 @@
 const redditApi = (function redditApiHelper() {
 
-	const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng", "tiff", "bmp", "gifv"];
+	const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng", ".tiff", ".bmp", ".gifv"];
 
 	function getCurrentTabUrl(callback) {
 
@@ -20,9 +20,6 @@ const redditApi = (function redditApiHelper() {
 	function getImageExtension(url) {
 	  const parts = url.split('.');
 	  let extension = parts[parts.length-1];
-	  if (extension === "gifv") {
-	  	extension = "gif";
-	  }
 	  return "." + extension;
 	}
 
@@ -50,10 +47,10 @@ const redditApi = (function redditApiHelper() {
 	    	})
 	    	return false;
 	    }
-	    else if (imageFormats.indexOf(extension) !== -1) {
-	      return url;
+	    else if (extension === ".gifv") {
+	   		return url.slice(0, -1);
 	    }
-	    return false;
+	    return url;
 	}
 
 	function extractImageLink(text) {

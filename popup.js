@@ -19,6 +19,7 @@ $(document).ready(function() {
 			const psbThread = redditApi.psbInUrl(url);
 			$.getJSON(url + ".json", function(json) {
 					$.each(json[1].data.children, function(i, obj) {
+						
 						if (!psbThread) {
 							$("#result").append("<li class='comment'>" + (i+1) + ". " + redditApi.htmlDecode(obj.data.body_html) + "</li>");
 						}
