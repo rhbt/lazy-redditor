@@ -1,5 +1,6 @@
 
 $(document).ready(function() {
+
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
 	  	$.getJSON(url + ".json", function(json) {
