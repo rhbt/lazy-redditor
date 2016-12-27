@@ -28,36 +28,46 @@ function getImgurId(url) {
 	return parts[parts.length-1];
 }
 
-function embedGyfcat(url) {
+function embedGfycat(url, count) {
 	var i = url.indexOf("gfycat.com/") + 11;
 	const first = url.slice(0, i);
-	const second = url.slice(i);
-	const gyfcatUrl = first + "ifr/" + second;
-	$("#result").append("<div class='gfycat'>" + "<iframe src='" + gyfcatUrl
+	let second = url.slice(i);
+	const dotPos = second.lastIndexOf(".");
+	if (dotPos !== -1) {
+	  second = second.slice(0, dotPos)
+	}
+	const gfycatUrl = "http://www.gfycat.com/" + "ifr/" + second;
+	console.log(gfycatUrl);
+	$("#result").append("<div class='gfycat' id='" + count + "'>" + "<iframe src='" + gfycatUrl
 		+ "' class='gfycat-iframe' frameborder='0'></iframe>" + "</div>");
 }
 
-function getImageLink(url) {
+function getImageLink(url, count) {
     const extension = getImageExtension(url);
     if (url.match(/imgur\.com\/[a-zA-Z0-9]+$/)) {
     	return url + ".jpg";
     }
     else if (url.match(/imgur.com\/a\/[a-zA-Z0-9]+$/)) {
     	const id = getImgurId(url);
-    	getImgurImage(id, "album", function(imageId) {
-    		$("#result").append("<img src='" + "http://imgur.com/" + imageId + ".jpg" + "'>");
+    	getImgurImage(id, "album", count, function(imageId) {
+    		$("#result").append("<div id='" + count + "'><img src='" + "http://imgur.com/" + imageId + ".jpg" + "'></div>");
+    		images.sortImages();
     	});
+    	
     	return false;
     }
     else if (url.match(/imgur\.com\/gallery\/[a-zA-Z0-9]+$/)) {
     	const id = getImgurId(url);
-    	getImgurImage(id, "gallery", function(imageId) {
-    		$("#result").append("<img src='" + "http://imgur.com/" + imageId + ".jpg" + "'>");
+    	getImgurImage(id, "gallery", count, function(imageId) {
+    		$("#result").append("<div id='" + count + "'><img src='" + "http://imgur.com/" + imageId + ".jpg" + "'></div>");
+    		images.sortImages();
     	})
+
     	return false;
     }
-    else if (url.match(/gfycat\.com\//)) {
-    	embedGyfcat(url);
+    else if (url.match(/gfycat\.com\//) && imageFormats.indexOf(extension) === -1) {
+    	embedGfycat(url, count);
+  
     	return false;
     }
     else if (extension === ".gifv") {
@@ -66,14 +76,14 @@ function getImageLink(url) {
     return url;
 }
 
-function extractImageLink(text) {
+function extractImageLink(text, count) {
 	if (text.match(/\[.+\]\(.+\)/)) {
 		const start = text.indexOf("(") + 1;
 		const end = text.indexOf(")");
-		return getImageLink(text.substr(start, end - start));	
+		return getImageLink(text.substr(start, end - start), count);	
 	}
 	else {
-		return getImageLink(text);
+		return getImageLink(text, count);
 	}
 }
 
@@ -86,7 +96,7 @@ function htmlDecode(input) {
   return doc.documentElement.textContent;
 }
 
-function getImgurImage(id, type, callback) {
+function getImgurImage(id, type, count, callback) {
 	$.ajax({
     	url: "https://api.imgur.com/3/" + type + "/" + id + "/images",
         type: "GET",

@@ -1,6 +1,6 @@
 
 $(document).ready(function() {
-
+	let count = 1;
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
 	  	$.getJSON(url + ".json", function(json) {
@@ -10,6 +10,7 @@ $(document).ready(function() {
 	  				$("#result").append("<img src='" + imageUrl + "'>");
 	  			}
 	  		});
+	  		images.removeBrokenImages();
 			});
 	  });
 	});
@@ -17,6 +18,7 @@ $(document).ready(function() {
 	document.getElementById("comments").addEventListener('click', function() { 
 		
 		redditApi.getCurrentTabUrl(function(url) {
+			images.removePrevious();
 			const psbThread = redditApi.psbInUrl(url);
 			$.getJSON(url + ".json", function(json) {
 				$.each(json[1].data.children, function(i, obj) {
@@ -24,11 +26,12 @@ $(document).ready(function() {
 						$("#result").append("<li class='comment'>" + (i+1) + ". " + redditApi.htmlDecode(obj.data.body_html) + "</li>");
 					}
 					else if (psbThread && obj.data.body !== "[deleted]") {
-						const imageUrl = redditApi.extractImageLink(obj.data.body);
+						const imageUrl = redditApi.extractImageLink(obj.data.body, count);
 						if (imageUrl) {
-							$("#result").append("<img src='" + imageUrl + "' onerror='this.parentNode.removeChild(this);'>");
+							$("#result").append("<div id='" + count + "'><img src='" + imageUrl + "'></div>");
 						}
 					}
+					count++;
   			})
 				images.removeBrokenImages();
 			});
