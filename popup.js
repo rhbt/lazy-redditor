@@ -3,13 +3,15 @@ $(document).ready(function() {
 	let count = 1;
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
-	  	$.getJSON(url + ".json", function(json) {
+	  	$.getJSON(redditApi.formatJsonUrl(url), function(json) {
 	  		$.each(json.data.children, function(i, obj) {
-	  			const imageUrl = redditApi.getImageLink(obj.data.url);
+	  			const imageUrl = redditApi.getImageLink(obj.data.url, count);
 	  			if (imageUrl) {
-	  				$("#result").append("<img src='" + imageUrl + "'>");
+	  				$("#result").append("<div id='" + count + "'><img src='" + imageUrl + "'></div");
 	  			}
+	  			count++;
 	  		});
+	  		images.sortImages();
 	  		images.removeBrokenImages();
 			});
 	  });
@@ -20,7 +22,7 @@ $(document).ready(function() {
 		redditApi.getCurrentTabUrl(function(url) {
 			images.removePrevious();
 			const psbThread = redditApi.psbInUrl(url);
-			$.getJSON(url + ".json", function(json) {
+			$.getJSON(redditApi.formatJsonUrl(url), function(json) {
 				$.each(json[1].data.children, function(i, obj) {
 					if (!psbThread) {
 						$("#result").append("<li class='comment'>" + (i+1) + ". " + redditApi.htmlDecode(obj.data.body_html) + "</li>");

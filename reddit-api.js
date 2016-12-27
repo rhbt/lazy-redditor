@@ -52,6 +52,7 @@ function getImageLink(url, count) {
     	getImgurImage(id, "album", count, function(imageId) {
     		$("#result").append("<div id='" + count + "'><img src='" + "http://imgur.com/" + imageId + ".jpg" + "'></div>");
     		images.sortImages();
+    		images.removeBrokenImages();
     	});
     	
     	return false;
@@ -61,6 +62,7 @@ function getImageLink(url, count) {
     	getImgurImage(id, "gallery", count, function(imageId) {
     		$("#result").append("<div id='" + count + "'><img src='" + "http://imgur.com/" + imageId + ".jpg" + "'></div>");
     		images.sortImages();
+    		images.removeBrokenImages();
     	})
 
     	return false;
@@ -112,12 +114,26 @@ function getImgurImage(id, type, count, callback) {
 	});
 }
 
+function formatJsonUrl(url) {
+  const domainPos = url.indexOf("reddit.com");
+  const pathPos = domainPos + 10;
+  let stringAfterDomain = url.slice(pathPos);
+  const queryPos = stringAfterDomain.indexOf("?")
+  let queryString = "";
+  if (queryPos !== -1) {
+    queryString = stringAfterDomain.slice(queryPos);
+    stringAfterDomain = stringAfterDomain.slice(0, queryPos);
+  }
+  return "http://www.reddit.com" + stringAfterDomain + ".json" + queryString;
+}
+
 return {
 	getCurrentTabUrl: getCurrentTabUrl,
 	getImageLink: getImageLink,
 	extractImageLink: extractImageLink,
 	psbInUrl: psbInUrl,
-	htmlDecode: htmlDecode
+	htmlDecode: htmlDecode,
+	formatJsonUrl: formatJsonUrl
 }
 
 })();
