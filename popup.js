@@ -1,47 +1,51 @@
 
 $(document).ready(function() {
 	let count = 1;
+
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
-	  	images.removeLastResult();
+	  	display.clearLastResult();
 	  	$.getJSON(redditApi.formatJsonUrl(url), function(json) {
 	  		$.each(json.data.children, function(i, obj) {
-	  			const imageUrl = redditApi.getImageLink(obj.data.url, count);
-	  			if (imageUrl) {
-	  				$("#result").append("<div id='" + count + "'><img src='" + imageUrl + "'></div");
-	  			}
+	  			const imageTypeAndLink = redditApi.getImageTypeAndLink(obj.data.url);
+	  			redditApi.embedImage(imageTypeAndLink, count);
 	  			count++;
 	  		});
-	  		images.sortImages();
-	  		images.removeBrokenImages();
+	  		display.removeBrokenImages();
 			});
 	  });
 	});
 
 	document.getElementById("comments").addEventListener('click', function() { 
-		
 		redditApi.getCurrentTabUrl(function(url) {
-			images.removeLastResult();
+			display.clearLastResult();
 			const psbThread = redditApi.psbInUrl(url);
 			$.getJSON(redditApi.formatJsonUrl(url), function(json) {
-				$.each(json[1].data.children, function(i, obj) {
-					if (!psbThread) {
-						$("#result").append("<li class='comment'>" + (i+1) + ". " + redditApi.htmlDecode(obj.data.body_html) + "</li>");
-					}
-					else if (psbThread && obj.data.body !== "[deleted]") {
-						const imageUrl = redditApi.extractImageLink(obj.data.body, count);
-						if (imageUrl) {
-							$("#result").append("<div id='" + count + "'><img src='" + imageUrl + "'></div>");
-						}
-					}
-					count++;
-  			})
-				images.removeBrokenImages();
+
+				if (redditApi.psbInUrl(url)) {
+					$.each(json[1].data.children, function(i, obj) { 
+						if (obj.data.body !== "[deleted]") {
+							const imageUrl = redditApi.extractImageLink(obj.data.body);
+							const imageTypeAndLink = redditApi.getImageTypeAndLink(imageUrl);
+							redditApi.embedImage(imageTypeAndLink, count);
+							count++;
+						}	
+					})
+				}
+				else {
+					$.each(json[1].data.children, function(i, obj) { 
+						redditApi.embedComment(i, obj.data.body_html);
+						count++;
+					})					
+				}
+				display.removeBrokenImages();
 			});
 		});
 	});
-$("#enlarge").on( "click", function() {
-	images.enlarge();
-});
+
+	$("#enlarge").on( "click", function() {
+		display.enlarge();
+	});
+
 })
 
