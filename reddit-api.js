@@ -1,4 +1,4 @@
-const redditApi = (function redditApiHelper() {
+const redditApi = (function redditApiModule() {
 
 const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng", ".tiff", ".bmp", ".gifv"];
 

@@ -3,6 +3,7 @@ $(document).ready(function() {
 	let count = 1;
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
+	  	images.removeLastResult();
 	  	$.getJSON(redditApi.formatJsonUrl(url), function(json) {
 	  		$.each(json.data.children, function(i, obj) {
 	  			const imageUrl = redditApi.getImageLink(obj.data.url, count);
@@ -20,7 +21,7 @@ $(document).ready(function() {
 	document.getElementById("comments").addEventListener('click', function() { 
 		
 		redditApi.getCurrentTabUrl(function(url) {
-			images.removePrevious();
+			images.removeLastResult();
 			const psbThread = redditApi.psbInUrl(url);
 			$.getJSON(redditApi.formatJsonUrl(url), function(json) {
 				$.each(json[1].data.children, function(i, obj) {
@@ -39,6 +40,8 @@ $(document).ready(function() {
 			});
 		});
 	});
-
+$("#enlarge").on( "click", function() {
+	images.enlarge();
+});
 })
 
