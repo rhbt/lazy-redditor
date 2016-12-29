@@ -20,6 +20,7 @@ function enlarge() {
 	const height = parseInt($("img").css("max-height")) + 100;
 	const width = parseInt($("img").css("max-width")) + 100;
 	$("img").css("max-width", width).css("max-width", height);
+	
 }
 
 return {

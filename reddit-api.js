@@ -84,12 +84,30 @@ function embedDirectLink(imageUrl, count) {
 		+ imageUrl + "'></div");
 }
 
-function embedComment(commentNumber, commentBody) {
-	$("#result").append("<li class='comment'>" 
-		+ (commentNumber+1) 
-		+ ". " 
-		+ redditApi.htmlDecode(commentBody) 
+function embedComment(commentNumber, commentData, level) {
+	let topLevelCommentNumber = "";
+	if (commentNumber) {
+		topLevelCommentNumber = "<b>" + commentNumber + "</b>. ";
+	}
+
+	$("#result").append("<li class='comment level-" + level + "'>"
+		+ topLevelCommentNumber
+		+ "<b>" + commentData.author + "</b>"
+		+ redditApi.htmlDecode(commentData.body_html) 
 		+ "</li>");
+}
+
+function traverseComments(json, level, maxLevel) {
+	if (level <= maxLevel) {
+	  $.each(json, function(i, obj) {
+	  	if (obj.data.body_html !== undefined){ 
+	  	redditApi.embedComment(false, obj.data, level);
+	  	}
+	    if (obj.data.replies) {
+	    	traverseComments(obj.data.replies.data.children, level + 1, maxLevel);
+	    }
+	  }) 
+	}
 }
 
 function embedImgur(id, type, count) {
@@ -160,6 +178,7 @@ return {
 	extractImageLink: extractImageLink,
 	embedImage: embedImage,
 	embedComment: embedComment,
+	traverseComments: traverseComments,
 	embedImgur: embedImgur,
 	embedGfycat: embedGfycat,
 	psbInUrl: psbInUrl,

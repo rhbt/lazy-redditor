@@ -1,5 +1,6 @@
+Popup = {
 
-$(document).ready(function() {
+	onLoad: function() {
 	let count = 1;
 
 	document.getElementById("pics").addEventListener('click', function() {
@@ -34,9 +35,12 @@ $(document).ready(function() {
 				}
 				else {
 					$.each(json[1].data.children, function(i, obj) { 
-						redditApi.embedComment(i, obj.data.body_html);
-						count++;
-					})					
+						redditApi.embedComment(count, obj.data, 1);
+					    if (obj.data.replies) {
+					      redditApi.traverseComments(obj.data.replies.data.children, 2, 5);
+					    }
+					  count++;
+					})				
 				}
 				display.removeBrokenImages();
 			});
@@ -47,5 +51,9 @@ $(document).ready(function() {
 		display.enlarge();
 	});
 
-})
+	}
+}
 
+$(document).ready(function() {
+	Popup.onLoad();
+})
