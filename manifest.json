@@ -3,6 +3,8 @@
   "name": "The Lazy Redditor",
   "version": "0.1",
 
+  "options_page": "options.html",
+
   "browser_action": {
     "default_icon": "lazy.png",
     "default_popup": "popup.html",
