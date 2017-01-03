@@ -1,18 +1,21 @@
 Popup = {
 
-	onLoad: function() {
+	onLoad: function() {		
 	let count = 1;
+	let replyLevels = parseInt(localStorage.replyLevels);
+
+	if (replyLevels === undefined) {
+		replyLevels = 1;
+	}
+
+	display.loadLastPage(replyLevels);
 
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
 	  	display.clearLastResult();
-	  	$.getJSON(redditApi.formatJsonUrl(url), function(json) {
-	  		$.each(json.data.children, function(i, obj) {
-	  			const imageTypeAndLink = redditApi.getImageTypeAndLink(obj.data.url);
-	  			redditApi.embedImage(imageTypeAndLink, count);
-	  			count++;
-	  		});
-	  		display.removeBrokenImages();
+	  	$.getJSON(redditApi.formatJsonUrl(url), function (json) {
+	  		redditApi.displayImages(json, count);
+	  		display.storeLastPage(url, json, "images");
 			});
 	  });
 	});
@@ -22,32 +25,14 @@ Popup = {
 			display.clearLastResult();
 			const psbThread = redditApi.psbInUrl(url);
 			$.getJSON(redditApi.formatJsonUrl(url), function(json) {
+				redditApi.displayComments(url, json, count, replyLevels);
+				display.storeLastPage(url, json, "comments");
 
-				if (redditApi.psbInUrl(url)) {
-					$.each(json[1].data.children, function(i, obj) { 
-						if (obj.data.body !== "[deleted]") {
-							const imageUrl = redditApi.extractImageLink(obj.data.body);
-							const imageTypeAndLink = redditApi.getImageTypeAndLink(imageUrl);
-							redditApi.embedImage(imageTypeAndLink, count);
-							count++;
-						}	
-					})
-				}
-				else {
-					$.each(json[1].data.children, function(i, obj) { 
-						redditApi.embedComment(count, obj.data, 1);
-					    if (obj.data.replies) {
-					      redditApi.traverseComments(obj.data.replies.data.children, 2, 5);
-					    }
-					  count++;
-					})				
-				}
-				display.removeBrokenImages();
 			});
 		});
 	});
 
-	$("#enlarge").on( "click", function() {
+	$("#enlarge").on("click", function() {
 		display.enlarge();
 	});
 

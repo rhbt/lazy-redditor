@@ -40,6 +40,38 @@ function formatJsonUrl(url) {
   return "http://www.reddit.com" + stringAfterDomain + ".json" + queryString;
 }
 
+function displayImages(json, count) {
+	$.each(json.data.children, function(i, obj) {
+		const imageTypeAndLink = getImageTypeAndLink(obj.data.url);
+		embedImage(imageTypeAndLink, count);
+		count++;
+	});
+	display.removeBrokenImages();
+}
+
+function displayComments(url, json, count, replyLevels) {
+	if (psbInUrl(url)) {
+		$.each(json[1].data.children, function(i, obj) { 
+			if (obj.data.body !== "[deleted]") {
+				const imageUrl = extractImageLink(obj.data.body);
+				const imageTypeAndLink = getImageTypeAndLink(imageUrl);
+				embedImage(imageTypeAndLink, count);
+				count++;
+			}	
+		})
+	}
+	else {
+		$.each(json[1].data.children, function(i, obj) { 
+			embedComment(count, obj.data, 1);
+		    if (obj.data.replies) {
+		      traverseComments(obj.data.replies.data.children, 2, replyLevels);
+		    }
+		  count++;
+		})				
+	}
+	display.removeBrokenImages();
+}
+
 
 function getImageTypeAndLink(url) {
     const extension = getImageExtension(url);
@@ -174,6 +206,8 @@ function getImgurImage(id, type, callback) {
 return {
 	getCurrentTabUrl: getCurrentTabUrl,
 	formatJsonUrl: formatJsonUrl,
+	displayImages: displayImages,
+	displayComments: displayComments,
 	getImageTypeAndLink: getImageTypeAndLink,
 	extractImageLink: extractImageLink,
 	embedImage: embedImage,
