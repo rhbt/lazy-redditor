@@ -1,6 +1,11 @@
 Popup = {
 
-	onLoad: function() {		
+	onLoad: function() {	
+
+  redditApi.getCurrentTabUrl(function(url) {
+  	redditApi.displayButtons(url);
+  })
+
 	let count = 1;
 	let replyLevels = parseInt(localStorage.replyLevels);
 

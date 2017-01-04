@@ -16,6 +16,18 @@ function getCurrentTabUrl(callback) {
   });
 }
 
+function displayButtons(url) {
+	if (url.match(/reddit.com\/r\/photoshopbattles\/comments/)) {
+		$("#comments").hide();
+	}
+	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9]+\/comments/)) {
+		$("#pics").hide();
+	}
+	else {
+		$("#comments").hide();
+	}
+}
+
 function getImageExtension(url) {
   const parts = url.split('.');
   let extension = parts[parts.length-1];
@@ -200,6 +212,7 @@ function getImgurImage(id, type, callback) {
 
 return {
 	getCurrentTabUrl: getCurrentTabUrl,
+	displayButtons: displayButtons,
 	formatJsonUrl: formatJsonUrl,
 	displayImages: displayImages,
 	displayComments: displayComments,
