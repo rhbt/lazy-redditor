@@ -125,7 +125,7 @@ function embedComment(commentNumber, commentData, level) {
 	$("#result").append("<li class='comment level-" + level + "'>"
 		+ topLevelCommentNumber
 		+ "<b>" + commentData.author + "</b>"
-		+ redditApi.htmlDecode(commentData.body_html) 
+		+ htmlDecode(commentData.body_html) 
 		+ "</li>");
 }
 
@@ -133,7 +133,7 @@ function traverseComments(json, level, maxLevel) {
 	if (level <= maxLevel) {
 	  $.each(json, function(i, obj) {
 	  	if (obj.data.body_html !== undefined){ 
-	  	redditApi.embedComment(false, obj.data, level);
+	  	embedComment(false, obj.data, level);
 	  	}
 	    if (obj.data.replies) {
 	    	traverseComments(obj.data.replies.data.children, level + 1, maxLevel);
@@ -194,12 +194,7 @@ function getImgurImage(id, type, callback) {
   	  dataType: "json",
     	headers: {"Authorization": "Client-ID 329db6d9e5bb5ab"}
 	}).done(function(data) {
-			if (type === "gallery") {
-				callback(data.data.id);
-			}
-			else {
-				callback(data.data[0].id);
-			}
+			callback(data.data[0].id);
 	});
 }
 
@@ -208,15 +203,7 @@ return {
 	formatJsonUrl: formatJsonUrl,
 	displayImages: displayImages,
 	displayComments: displayComments,
-	getImageTypeAndLink: getImageTypeAndLink,
-	extractImageLink: extractImageLink,
-	embedImage: embedImage,
-	embedComment: embedComment,
-	traverseComments: traverseComments,
-	embedImgur: embedImgur,
-	embedGfycat: embedGfycat,
 	psbInUrl: psbInUrl,
-	htmlDecode: htmlDecode
 }
 
 })();
