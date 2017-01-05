@@ -4,7 +4,8 @@
 
 <head>
   <title>The Lazy Redditor</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="popup.css">
   <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
   <script type="text/javascript" src="display.js"></script>
   <script type="text/javascript" src="reddit-api.js"></script>
@@ -15,14 +16,14 @@
 <body>
 
 <nav>
-  <div class="main-title"><img src="lazy.png" id="main-logo"><h1>The Lazy Redditor</h1></div>
-  <ul class="nav-buttons">
+  <img src="lazy.png" id="main-logo"><h1 id="main-title">The Lazy Redditor</h1>
+</nav>
+  <ul id="nav-buttons">
     <li><button type="button" id="pics">Get Pics</button></li>
     <li><button type="button" id="comments">Get Comments</button></li>
     <li><button type="button" id="enlarge">Enlarge</button></li>
+    <li><button type="button" id="clear">Clear Last Result</button></li>
   </ul>
-</nav>
-
 <div>
 	<ul id="result">
 	</ul>

@@ -18,13 +18,19 @@ function getCurrentTabUrl(callback) {
 
 function displayButtons(url) {
 	if (url.match(/reddit.com\/r\/photoshopbattles\/comments/)) {
-		$("#comments").hide();
+		$("#pics").hide();
+		$("#comments").text("Get Pics");
 	}
 	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9]+\/comments/)) {
 		$("#pics").hide();
 	}
-	else {
+	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9]+/)) {
 		$("#comments").hide();
+	}
+	else {
+		$("#pics").hide();
+		$("#comments").hide();
+		$("#enlarge").hide();
 	}
 }
 

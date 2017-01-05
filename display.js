@@ -20,7 +20,6 @@ function enlarge() {
 	const height = parseInt($("img").css("max-height")) + 100;
 	const width = parseInt($("img").css("max-width")) + 100;
 	$("img").css("max-width", width).css("max-width", height);
-
 }
 
 function storeLastPage(url, json, type) {
@@ -57,13 +56,37 @@ function loadLastPage(replyLevels) {
 	}
 }
 
+function clearLastResult() {
+	$("#result").empty();
+	localStorage.removeItem("lastResult");
+	localStorage.removeItem("lastResultType");
+	localStorage.removeItem("lastUrl");
+}
+
+function shrinkImage() {
+	let height = parseInt($(this).css("max-height"));
+	let width = parseInt($(this).css("max-width"));
+	
+	$(this).css("max-width", width-100).css("max-height", height-100);
+}
+
+function enlargeImage() {
+	const height = parseInt($(this).css("max-height"));
+	const width = parseInt($(this).css("max-width"));
+	console.log(height, width);
+	$(this).css("max-width", width+100).css("max-height", height+100);
+}
+
 return {
 	clearLastResult: clearLastResult,
 	sortImages: sortImages,
 	removeBrokenImages: removeBrokenImages,
 	enlarge: enlarge,
 	storeLastPage: storeLastPage,
-	loadLastPage: loadLastPage
+	loadLastPage: loadLastPage,
+	clearLastResult: clearLastResult,
+	shrinkImage: shrinkImage,
+	enlargeImage: enlargeImage
 }
 
 })();

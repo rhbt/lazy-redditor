@@ -51,4 +51,28 @@ p {
 ul {
   list-style-type: none;
   padding-left: 0;
-}​
+}
+
+#main-logo {
+  margin: 0;
+  width: 40px;
+  height: 40px;
+}
+
+#main-title {
+  font-size: 27.5px;
+  margin: 5px 0 0 20px;
+}
+
+nav {
+  display: flex;
+  width: 350px;
+}
+
+#nav-buttons {
+  margin-bottom: 60px;
+}
+
+button {
+  float: left;
+}
