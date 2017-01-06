@@ -185,8 +185,9 @@ function embedGfycat(url, count) {
 		+ "' class='gfycat-iframe' frameborder='0'></iframe></div>");
 }
 
-function extractImageLink(text, count) {
-	if (text.match(/\[.+\]\(.+\)/)) {
+function extractImageLink(text) {
+	console.log(text);
+	if (text.match(/\[.+\]\s*\(.+\)/)) {
 		const start = text.indexOf("(") + 1;
 		const end = text.indexOf(")");
 		return text.substr(start, end - start);	
@@ -222,7 +223,6 @@ return {
 	formatJsonUrl: formatJsonUrl,
 	displayImages: displayImages,
 	displayComments: displayComments,
-	psbInUrl: psbInUrl,
 }
 
 })();

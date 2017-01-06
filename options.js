@@ -1,7 +1,20 @@
 $(document).ready(function() {
+ 	let saveLastPage, replyLevels;
 
-	const saveLastPage = JSON.parse(localStorage.saveLastPage);
-	const replyLevels = parseInt(localStorage.replyLevels);
+ 	try {
+ 		saveLastPage = JSON.parse(localStorage.saveLastPage);	
+ 	}
+ 	catch (error) {
+ 	    saveLastPage = false;
+ 	}
+
+ 	try {
+ 		replyLevels = parseInt(localStorage.replyLevels);	
+ 	}
+ 	catch (error) {
+ 		replyLevels = 1;
+ 	}
+
 
 	if (saveLastPage) {
 		$('#save-last-page').prop('checked', true);
@@ -37,9 +50,11 @@ $(document).ready(function() {
 		}
 
 		if (saveLastPageChecked) {
+			console.log("Saved");
 			localStorage.saveLastPage = true;
 		} 
 		else {
+			console.log("Not Saved");
 			localStorage.saveLastPage = false;
 		}
 	});

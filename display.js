@@ -16,12 +16,6 @@ function removeBrokenImages() {
 	});
 }
 
-function enlarge() {
-	const height = parseInt($("img").css("max-height")) + 100;
-	const width = parseInt($("img").css("max-width")) + 100;
-	$("img").css("max-width", width).css("max-width", height);
-}
-
 function storeLastPage(url, json, type) {
 	localStorage.lastResult = JSON.stringify(json);
 	localStorage.lastResultType = type;
@@ -81,7 +75,6 @@ return {
 	clearLastResult: clearLastResult,
 	sortImages: sortImages,
 	removeBrokenImages: removeBrokenImages,
-	enlarge: enlarge,
 	storeLastPage: storeLastPage,
 	loadLastPage: loadLastPage,
 	clearLastResult: clearLastResult,
