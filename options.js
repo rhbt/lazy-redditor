@@ -8,13 +8,11 @@ $(document).ready(function() {
  	    saveLastPage = false;
  	}
 
- 	try {
- 		replyLevels = parseInt(localStorage.replyLevels);	
- 	}
- 	catch (error) {
+ 	replyLevels = parseInt(localStorage.replyLevels);	
+
+ 	if (!replyLevels) {
  		replyLevels = 1;
  	}
-
 
 	if (saveLastPage) {
 		$('#save-last-page').prop('checked', true);

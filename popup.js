@@ -14,7 +14,7 @@ Popup = {
 	}
 
 	display.loadLastPage(replyLevels);
-
+	
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
 	  	display.clearLastResult();
@@ -22,6 +22,7 @@ Popup = {
 	  		redditApi.displayImages(json, count);
 	  		display.storeLastPage(url, json, "images");
 			});
+			imageResizeListener();
 	  });
 	});
 
@@ -48,7 +49,7 @@ imageResizeListener: function() {
 	const DELAY = 300;
 	let clicks = 0, timer = null;
 
-	$("img").on("click", function(event){
+	$(document).on("click", "img", function(event){
     clicks++;  //count clicks
     const that = $(this)
 

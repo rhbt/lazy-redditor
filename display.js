@@ -60,7 +60,7 @@ function clearLastResult() {
 function shrinkImage() {
 	let height = parseInt($(this).css("max-height"));
 	let width = parseInt($(this).css("max-width"));
-	
+	console.log(height, width);
 	$(this).css("max-width", width-100).css("max-height", height-100);
 }
 

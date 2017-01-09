@@ -30,7 +30,6 @@ function displayButtons(url) {
 	else {
 		$("#pics").hide();
 		$("#comments").hide();
-		$("#enlarge").hide();
 	}
 }
 
@@ -70,7 +69,7 @@ function displayImages(json, count) {
 function displayComments(url, json, count, replyLevels) {
 	if (psbInUrl(url)) {
 		$.each(json[1].data.children, function(i, obj) { 
-			if (obj.data.body !== "[deleted]") {
+			if (obj.data.body !== "[deleted]" && obj.data.body !== undefined) {
 				const imageUrl = extractImageLink(obj.data.body);
 				const imageTypeAndLink = getImageTypeAndLink(imageUrl);
 				embedImage(imageTypeAndLink, count);
@@ -186,11 +185,13 @@ function embedGfycat(url, count) {
 }
 
 function extractImageLink(text) {
-	console.log(text);
 	if (text.match(/\[.+\]\s*\(.+\)/)) {
 		const start = text.indexOf("(") + 1;
 		const end = text.indexOf(")");
 		return text.substr(start, end - start);	
+	}
+	else if (text.match(/http:\/\/\S*/)) {
+	  return text.match(/http:\/\/\S*/)[0];
 	}
 	else {
 		return text;
