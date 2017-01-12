@@ -61,6 +61,10 @@ input[type=submit] {
 	font-size: 35px;
 }
 
+.tab {
+	margin-bottom: 15px;
+}
+
 .option {
 	margin-bottom: 20px;
 }
@@ -71,4 +75,8 @@ input[type=submit] {
 	left: 15%;
 	top: 90px;
 	margin-right: 15%;
+}
+
+select {
+	font-size: 13px;
 }

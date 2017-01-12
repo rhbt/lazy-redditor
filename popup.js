@@ -13,8 +13,8 @@ Popup = {
 		replyLevels = 1;
 	}
 
-	display.loadLastPage(replyLevels);
-	
+	setTimeout(display.loadLastPage.bind(null, replyLevels), 100);
+
 	document.getElementById("pics").addEventListener('click', function() {
 	  redditApi.getCurrentTabUrl(function(url) {
 	  	display.clearLastResult();

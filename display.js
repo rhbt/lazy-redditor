@@ -28,10 +28,9 @@ function loadLastPage(replyLevels) {
 		saveLastPage = JSON.parse(localStorage.saveLastPage);
 		lastResultType = localStorage.lastResultType;
 		lastResult = JSON.parse(localStorage.lastResult);
-		
 		lastUrl = localStorage.lastUrl;
 	}
-	catch(e) {
+	catch(error) {
 		saveLastPage = false;
 	}
 	try {
@@ -40,13 +39,16 @@ function loadLastPage(replyLevels) {
 				if (lastResultType === "images") {
 					redditApi.displayImages(lastResult, 1);
 				}
-				else {
+				else if (lastResultType === "comments") {
 					redditApi.displayComments(lastUrl, lastResult, 1, replyLevels);
 				}
 			}
 		}
+		else {
+			displayInstructions();
+		}
 	}
-	catch(e) {
+	catch(error) {
 	}
 }
 
@@ -69,6 +71,21 @@ function enlargeImage() {
 	const width = parseInt($(this).css("max-width"));
 	console.log(height, width);
 	$(this).css("max-width", width+100).css("max-height", height+100);
+}
+
+function displayInstructions() {
+	$("#result").append(
+		"<div id='instructions'><li><h1>How to use</h1></li>" +
+		"<li><h2>Getting Pictures</h2></li>" +
+		"<li><b>1.</b> Go to an image based subreddit " + 
+		"like /r/pics or an /r/photoshopbattles thread" +
+		"<li><b>2.</b> Click the 'Get Pics' button</li>" +
+		"<li><b>3.</b> Images will then be displayed</li>" +
+		"<li><h2>Getting Comments</h2></li>" +
+		"<li><b>1.</b> Go to the comments section of any thread" + 
+		"<li><b>2.</b> Click the 'Get Comments' button</li>" +
+		"<li><b>3.</b> Comments from that thread will be displayed</li></div>"
+		);
 }
 
 return {

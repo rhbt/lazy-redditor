@@ -21,10 +21,10 @@ function displayButtons(url) {
 		$("#pics").hide();
 		$("#comments").text("Get Pics");
 	}
-	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9]+\/comments/)) {
+	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9_-]+\/comments/)) {
 		$("#pics").hide();
 	}
-	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9]+/)) {
+	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9_-]+/)) {
 		$("#comments").hide();
 	}
 	else {
@@ -139,7 +139,7 @@ function embedComment(commentNumber, commentData, level) {
 		topLevelCommentNumber = "<b>" + commentNumber + "</b>. ";
 	}
 
-	$("#result").append("<li class='comment level-" + level + "'>"
+	$("#result").append("<li class='comment level-" + level + "'>" 
 		+ topLevelCommentNumber
 		+ "<b>" + commentData.author + "</b>"
 		+ htmlDecode(commentData.body_html) 
