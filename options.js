@@ -1,5 +1,7 @@
 $(document).ready(function() {
+	
  	let saveLastPage, replyLevels;
+ 	replyLevels = parseInt(localStorage.replyLevels);	
 
  	try {
  		saveLastPage = JSON.parse(localStorage.saveLastPage);	
@@ -7,8 +9,6 @@ $(document).ready(function() {
  	catch (error) {
  	    saveLastPage = false;
  	}
-
- 	replyLevels = parseInt(localStorage.replyLevels);	
 
  	if (!replyLevels) {
  		replyLevels = 1;
@@ -31,7 +31,8 @@ $(document).ready(function() {
 	});
 
 
-	$(document).on("submit", "#options-form", function() {
+	$(document).on("submit", "#options-form", function(event) {
+		event.preventDefault();
 		const replyLevels = $("#reply-levels").val();
 		const saveLastPageChecked = $("#save-last-page").is(":checked");
 		
@@ -43,12 +44,12 @@ $(document).ready(function() {
 		}
 
 		if (saveLastPageChecked) {
-			console.log("Saved");
 			localStorage.saveLastPage = true;
 		} 
 		else {
-			console.log("Not Saved");
 			localStorage.saveLastPage = false;
 		}
+		$("#success-message").text("Changes Saved!");
 	});
+
 })

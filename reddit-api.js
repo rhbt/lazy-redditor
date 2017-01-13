@@ -3,6 +3,7 @@ const redditApi = (function redditApiModule() {
 const imageFormats = [".jpeg", ".jpg", ".png", ".gif", ".apng", ".tiff", ".bmp", ".gifv"];
 
 function getCurrentTabUrl(callback) {
+
   const queryInfo = {
     active: true,
     currentWindow: true
@@ -17,13 +18,17 @@ function getCurrentTabUrl(callback) {
 }
 
 function displayButtons(url) {
+	//use button for getting comments, but rename it "Get Pics"
+	//if in /r/photoshopbattles thread
 	if (url.match(/reddit.com\/r\/photoshopbattles\/comments/)) {
 		$("#pics").hide();
 		$("#comments").text("Get Pics");
 	}
+	//hide button to get pictures if in comments section
 	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9_-]+\/comments/)) {
 		$("#pics").hide();
 	}
+	//hide button to get comments if not in comments section
 	else if (url.match(/reddit.com\/r\/[a-zA-Z0-9_-]+/)) {
 		$("#comments").hide();
 	}
@@ -40,20 +45,28 @@ function getImageExtension(url) {
 }
 
 function getImgurId(url) {
+	//gets image id for Imgur image
+	//which is after the last "/"
 	const parts = url.split("/");
 	return parts[parts.length-1];
 }
 
 function formatJsonUrl(url) {
+	//char position of "reddit.com"
   const domainPos = url.indexOf("reddit.com");
+  //add 10 to char position to get path position 
   const pathPos = domainPos + 10;
+  //get part of url after "reddit.com"
   let stringAfterDomain = url.slice(pathPos);
+  //check if url has query params
   const queryPos = stringAfterDomain.indexOf("?")
   let queryString = "";
+  //if there are query params, get the query string
   if (queryPos !== -1) {
     queryString = stringAfterDomain.slice(queryPos);
     stringAfterDomain = stringAfterDomain.slice(0, queryPos);
   }
+  //.json must come after path, but should be before query string
   return "http://www.reddit.com" + stringAfterDomain + ".json" + queryString;
 }
 
@@ -67,6 +80,8 @@ function displayImages(json, count) {
 }
 
 function displayComments(url, json, count, replyLevels) {
+	//if in /r/photoshopbattles thread, display pictures instead
+	//of comments
 	if (psbInUrl(url)) {
 		$.each(json[1].data.children, function(i, obj) { 
 			if (obj.data.body !== "[deleted]" && obj.data.body !== undefined) {
@@ -95,30 +110,37 @@ function getImageTypeAndLink(url) {
     if (extension === ".gifv") {
     	url = url.slice(0, -1);
     }
+    //not direct Imgur image link, so append .jpg to 
+    //end of url to produce direct image link
     if (url.match(/imgur\.com\/[a-zA-Z0-9]+$/)) {
     	return ["imgurPage", url + ".jpg"];
     }
+    //image in Imgur album
     else if (url.match(/imgur.com\/a\/[a-zA-Z0-9]+$/)) {
     	const id = getImgurId(url);
     	return ["imgurAlbum", "album", id];
     }
+    //image in Imgur gallery
     else if (url.match(/imgur\.com\/gallery\/[a-zA-Z0-9]+$/)) {
     	const id = getImgurId(url);
     	return ["imgurGallery", "gallery", id];
     }
+    //gif is a gif hosted on Gfycat
     else if (url.match(/gfycat\.com\//) && imageFormats.indexOf(extension) === -1) {
     	return ["gfycat", url];
     }
+    //image is a direct link to an image
   	else {
   		return ["directLink", url];
   	}
 }
 
 function embedImage(imageTypeAndLink, count) {
+	//make API call to Imgur to get image from album or gallery
 	if (imageTypeAndLink[0] === "imgurAlbum" || imageTypeAndLink[0] === "imgurGallery") {
 		embedImgur(imageTypeAndLink[2], imageTypeAndLink[1], count);
-		
 	}
+	//format gif from Gfycat
 	else if (imageTypeAndLink[0] === "gfycat") {
 		embedGfycat(imageTypeAndLink[1], count)
 	}
@@ -135,6 +157,7 @@ function embedDirectLink(imageUrl, count) {
 
 function embedComment(commentNumber, commentData, level) {
 	let topLevelCommentNumber = "";
+
 	if (commentNumber) {
 		topLevelCommentNumber = "<b>" + commentNumber + "</b>. ";
 	}
@@ -145,6 +168,7 @@ function embedComment(commentNumber, commentData, level) {
 		+ htmlDecode(commentData.body_html) 
 		+ "</li>");
 }
+
 
 function traverseComments(json, level, maxLevel) {
 	if (level <= maxLevel) {
@@ -160,24 +184,34 @@ function traverseComments(json, level, maxLevel) {
 }
 
 function embedImgur(id, type, count) {
+	//make API call to Imgur to get image from
+	//album or gallery
 	getImgurImage(id, type, function(imageId) {
 		$("#result").append("<div id='" 
 			+ count + "'><img src='" + "http://imgur.com/" 
 			+ imageId + ".jpg" + "'></div>");
 		
+		//need to sort images after since images 
+		//displayed from API call to Imgur will 
+		//load last
 		display.sortImages();
     display.removeBrokenImages();
 	})
 }
 
 function embedGfycat(url, count) {
+	//char position of path
 	const pathPos = url.indexOf("gfycat.com/") + 11;
-	let pathAndParams = url.slice(pathPos);
-	const dotPos = pathAndParams.lastIndexOf(".");
+	//get string containing path and query string
+	let pathAndQueryString = url.slice(pathPos);
+	//find if there is an extension
+	const dotPos = pathAndQueryString.lastIndexOf(".");
+	//if there is an extension, take it out of pathAndQueryString
 	if (dotPos !== -1) {
-	  pathAndParams = pathAndParams.slice(0, dotPos)
+	  pathAndQueryString = pathAndQueryString.slice(0, dotPos)
 	}
-	const gfycatUrl = "http://www.gfycat.com/ifr/" + pathAndParams;
+	const gfycatUrl = "http://www.gfycat.com/ifr/" + pathAndQueryString;
+	//need to use iframe to embed Gfycat url
 	$("#result").append("<div class='gfycat' id='" 
 		+ count + "'><iframe src='" 
 		+ gfycatUrl
@@ -185,11 +219,15 @@ function embedGfycat(url, count) {
 }
 
 function extractImageLink(text) {
+	//finds image link in the form of embedded
+	//links with the form: [text](url)
 	if (text.match(/\[.+\]\s*\(.+\)/)) {
 		const start = text.indexOf("(") + 1;
 		const end = text.indexOf(")");
 		return text.substr(start, end - start);	
 	}
+	//find image link that is directly posted
+	//in comment
 	else if (text.match(/http:\/\/\S*/)) {
 	  return text.match(/http:\/\/\S*/)[0];
 	}
@@ -202,11 +240,14 @@ function psbInUrl(url) {
 	return url.match(/reddit\.com\/r\/photoshopbattles\//) !== null;
 }
 
+//unescapes html
 function htmlDecode(input) {
   const doc = new DOMParser().parseFromString(input, "text/html");
   return doc.documentElement.textContent;
 }
 
+//makes call to Imgur's API to get images from
+//albums and galleries
 function getImgurImage(id, type, callback) {
 	$.ajax({
     	url: "https://api.imgur.com/3/" + type + "/" + id + "/images",

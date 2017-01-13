@@ -5,6 +5,9 @@ function clearLastResult() {
 }
 
 function sortImages() {
+	//sorts images based on number in id
+	//needed to properly sort images from 
+	//second API call to Imgur 
 	$("#result > div").tsort("", {attr:"id"});
 }
 
@@ -24,16 +27,21 @@ function storeLastPage(url, json, type) {
 
 function loadLastPage(replyLevels) {
 	let saveLastPage, lastResultType, lastResult, lastUrl;
+	//try getting local storage
 	try {
+		//user option to save last page
 		saveLastPage = JSON.parse(localStorage.saveLastPage);
 		lastResultType = localStorage.lastResultType;
+		//data for last page
 		lastResult = JSON.parse(localStorage.lastResult);
 		lastUrl = localStorage.lastUrl;
 	}
 	catch(error) {
-		saveLastPage = false;
+		saveLastPage = false; //set to false if error occurs
 	}
+
 	try {
+		//if user has option to load last page, load it
 		if (saveLastPage) {
 			if (lastResult) {
 				if (lastResultType === "images") {
@@ -44,6 +52,7 @@ function loadLastPage(replyLevels) {
 				}
 			}
 		}
+		//if not, display instructions instead
 		else {
 			displayInstructions();
 		}
@@ -53,6 +62,7 @@ function loadLastPage(replyLevels) {
 }
 
 function clearLastResult() {
+	//clears last page result and local storage
 	$("#result").empty();
 	localStorage.removeItem("lastResult");
 	localStorage.removeItem("lastResultType");
@@ -62,14 +72,14 @@ function clearLastResult() {
 function shrinkImage() {
 	let height = parseInt($(this).css("max-height"));
 	let width = parseInt($(this).css("max-width"));
-	console.log(height, width);
+	let newHeight, newWidth;
+
 	$(this).css("max-width", width-100).css("max-height", height-100);
 }
 
 function enlargeImage() {
 	const height = parseInt($(this).css("max-height"));
 	const width = parseInt($(this).css("max-width"));
-	console.log(height, width);
 	$(this).css("max-width", width+100).css("max-height", height+100);
 }
 

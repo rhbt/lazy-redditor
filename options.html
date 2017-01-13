@@ -11,22 +11,20 @@
   <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
   <script src="options.js"></script>
 </head>
+
 <body>
 
 <div class="container">
 
 <nav>
-  <div class="main-title"><img src="lazy.png" id="main-logo"><h1>The Lazy Redditor</h1></div>
-  <ul>
-    <li class="tab">Options</li>
-    <li class="tab">About</li>
-  </ul>
+  <div id="main-title"><img src="lazy.png" id="main-logo"><h1>The Lazy Redditor</h1></div>
+  <span class="tab" id="options-tab">Options</span>
+  <span class="tab" id="about-tab">About</span>
 </nav>
 
 <div id="options">
-  <h1 class="header">Settings</h1>
+  <h1 id="settings-header">Settings</h1>
   <form id="options-form">
-
     <div class="option">
     <label>Set comment depth
     <select id="reply-levels">
@@ -45,13 +43,12 @@
     <br>
     </div>
 
-    <input type="submit" value="Save">
-
+    <input type="submit" value="Save"> &nbsp; <span id="success-message"></span>
   </form>
 </div>
 
 <div id="about">
-  <h1 class="header">About</h1>
+  <h1 id="about-header">About</h1>
   <p>This is a Chrome extension built for Reddit to make browsing image based subreddits 
   and getting pictures from /r/photoshopbattles threads easier. Instead of clicking 
   on each individual image link, you just click one button. It's that simple. I hope you 
@@ -61,12 +58,12 @@
   <p>Code is available on GitHub at 
   <a href="https://github.com/rhabt/Lazy-Redditor">https://github.com/rhbt/Lazy-Redditor</a></p>
   <p>Icon made by Freepik from <a href="http://www.flaticon.com">http://www.flaticon.com</a></p>
-
 </div>
 
 
 </div>
 
 </body> 
+
 </html>
 

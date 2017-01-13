@@ -1,7 +1,8 @@
 # The Lazy Redditor
 
 A Chrome extension that pulls and displays images from image based subreddits and threads. 
-If you want to view the images on an image based subreddit or /r/photoshopbattles thread, it's annoying to click every image link. With The Lazy Redditor, view all 
+If you want to view the images on an image based subreddit or /r/photoshopbattles thread, 
+it's annoying to click every image link. With The Lazy Redditor, view all 
 the images on a subreddit page or thread by clicking one button.
 
 # Installation 
