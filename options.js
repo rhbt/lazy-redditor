@@ -49,7 +49,11 @@ $(document).ready(function() {
 		else {
 			localStorage.saveLastPage = false;
 		}
-		$("#success-message").text("Changes Saved!");
+		$("#success-message").delay(500).fadeIn("normal", function() {
+			$(this).text("Changes Saved!");
+			$(this).delay(1500).fadeOut();
+		})
+		
 	});
 
 })

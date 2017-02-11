@@ -16,7 +16,7 @@ Popup = {
 	}
 
 	//delay loading last result, can prevent opening extension if not delayed
-	setTimeout(display.loadLastPage.bind(null, replyLevels), 100);
+	setTimeout(display.loadLastPage.bind(null, replyLevels), 1000);
 
 	document.getElementById("pics").addEventListener('click', function() {
 		//gets the current tab url

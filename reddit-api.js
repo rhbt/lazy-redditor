@@ -107,12 +107,16 @@ function displayComments(url, json, count, replyLevels) {
 
 function getImageTypeAndLink(url) {
     const extension = getImageExtension(url);
+
+    //gifv format
     if (extension === ".gifv") {
-    	url = url.slice(0, -1);
+    	const startOfId = url.lastIndexOf("/");
+    	const gifId = url.slice(startOfId + 1, -4);
+    	return ["gifv", gifId];
     }
     //not direct Imgur image link, so append .jpg to 
     //end of url to produce direct image link
-    if (url.match(/imgur\.com\/[a-zA-Z0-9]+$/)) {
+    else if (url.match(/imgur\.com\/[a-zA-Z0-9]+$/)) {
     	return ["imgurPage", url + ".jpg"];
     }
     //image in Imgur album
@@ -125,6 +129,7 @@ function getImageTypeAndLink(url) {
     	const id = getImgurId(url);
     	return ["imgurGallery", "gallery", id];
     }
+
     //gif is a gif hosted on Gfycat
     else if (url.match(/gfycat\.com\//) && imageFormats.indexOf(extension) === -1) {
     	return ["gfycat", url];
@@ -139,6 +144,9 @@ function embedImage(imageTypeAndLink, count) {
 	//make API call to Imgur to get image from album or gallery
 	if (imageTypeAndLink[0] === "imgurAlbum" || imageTypeAndLink[0] === "imgurGallery") {
 		embedImgur(imageTypeAndLink[2], imageTypeAndLink[1], count);
+	}
+	else if (imageTypeAndLink[0] === "gifv") {
+		embedGifv(imageTypeAndLink[1], count);
 	}
 	//format gif from Gfycat
 	else if (imageTypeAndLink[0] === "gfycat") {
@@ -197,6 +205,21 @@ function embedImgur(id, type, count) {
 		display.sortImages();
     display.removeBrokenImages();
 	})
+}
+
+function embedGifv(id, count) {
+	$("#result").append("<div id='"
+		+ count + "'><video autoplay loop>"
+		+ "<source src='" + "http://i.imgur.com/" + id + "webm" 
+		+ "' type='video/webm'>"
+		+ "<source src='" + "http://i.imgur.com/" + id + "mp4" 
+		+ "' type='video/mp4'>"
+		+ "</video>"
+		+ "</div>");
+
+	setTimeout(function () {      
+    	$("#" + count + " > video").get(0).play();
+	}, 500);
 }
 
 function embedGfycat(url, count) {

@@ -17,6 +17,15 @@ img {
   margin-bottom: 50px;
 }
 
+video {
+  max-width: 500px;
+  max-height: 500px; 
+  width: auto;
+  height: auto;
+  display: block;
+  margin-bottom: 50px;
+}
+
 ul {
   list-style-type: none;
   padding-left: 0;
@@ -91,6 +100,7 @@ button {
   max-height: 500px;
   width: 500px;
   height: 500px;
+  margin-bottom: 50px;
 }
 
 .gfycat-iframe {
