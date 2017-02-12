@@ -120,12 +120,15 @@ function getImageTypeAndLink(url) {
     	return ["imgurPage", url + ".jpg"];
     }
     //image in Imgur album
-    else if (url.match(/imgur.com\/a\/[a-zA-Z0-9]+$/)) {
+    else if (url.match(/imgur.com\/a\/.+/)) {
+    	// console.log(url);
+    	url = url.match(/imgur.com\/a\/[a-zA-Z0-9]+/)[0];
     	const id = getImgurId(url);
     	return ["imgurAlbum", "album", id];
     }
     //image in Imgur gallery
-    else if (url.match(/imgur\.com\/gallery\/[a-zA-Z0-9]+$/)) {
+    else if (url.match(/imgur\.com\/gallery\/[a-zA-Z0-9]+/)) {
+    	url = url.match(/imgur\.com\/gallery\/[a-zA-Z0-9]+/)[0];
     	const id = getImgurId(url);
     	return ["imgurGallery", "gallery", id];
     }
@@ -182,7 +185,7 @@ function traverseComments(json, level, maxLevel) {
 	if (level <= maxLevel) {
 	  $.each(json, function(i, obj) {
 	  	if (obj.data.body_html !== undefined){ 
-	  	embedComment(false, obj.data, level);
+	  		embedComment(false, obj.data, level);
 	  	}
 	    if (obj.data.replies) {
 	    	traverseComments(obj.data.replies.data.children, level + 1, maxLevel);
@@ -196,14 +199,13 @@ function embedImgur(id, type, count) {
 	//album or gallery
 	getImgurImage(id, type, function(imageId) {
 		$("#result").append("<div id='" 
-			+ count + "'><img src='" + "http://imgur.com/" 
-			+ imageId + ".jpg" + "'></div>");
-		
+		+ count + "'><img src='" + "http://imgur.com/" 
+		+ imageId + ".jpg" + "'></div>");
 		//need to sort images after since images 
 		//displayed from API call to Imgur will 
 		//load last
 		display.sortImages();
-    display.removeBrokenImages();
+   		display.removeBrokenImages();
 	})
 }
 
@@ -278,7 +280,12 @@ function getImgurImage(id, type, callback) {
   	  dataType: "json",
     	headers: {"Authorization": "Client-ID 329db6d9e5bb5ab"}
 	}).done(function(data) {
+		if (data.data.id) {
+			callback(data.data.id);
+		}
+		else {
 			callback(data.data[0].id);
+		}
 	});
 }
 
