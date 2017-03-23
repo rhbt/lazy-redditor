@@ -14,7 +14,34 @@ img {
   width: auto;
   height: auto;
   display: block;
-  margin-bottom: 50px;
+}
+
+.img-container {
+  margin-top: 70px;
+  display: table;
+}
+
+.gfycat {
+  max-width: 500px;
+  max-height: 500px;
+  width: 500px;
+  height: 500px;
+  margin-top: 50px;
+  display: table;
+}
+
+
+.pic-info {
+  font-size: 14px;
+  display: table-caption;
+  caption-side: bottom;
+}
+
+a.thread-link {
+  color: #4285f4;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 video {
@@ -23,7 +50,6 @@ video {
   width: auto;
   height: auto;
   display: block;
-  margin-bottom: 50px;
 }
 
 ul {
@@ -93,14 +119,6 @@ button {
 
 .error {
   color: red;
-}
-
-.gfycat {
-  max-width: 500px;
-  max-height: 500px;
-  width: 500px;
-  height: 500px;
-  margin-bottom: 50px;
 }
 
 .gfycat-iframe {

@@ -72,9 +72,11 @@ function formatJsonUrl(url) {
 
 function displayImages(json, count) {
 	$.each(json.data.children, function(i, obj) {
-		const imageTypeAndLink = getImageTypeAndLink(obj.data.url);
-		embedImage(imageTypeAndLink, count);
-		count++;
+		if (obj.data.stickied != true) {
+			const imageTypeAndLink = getImageTypeAndLink(obj.data.url);
+			embedImage(imageTypeAndLink, obj.data, count);
+			count++;
+		}
 	});
 	display.removeBrokenImages();
 }
@@ -87,7 +89,7 @@ function displayComments(url, json, count, replyLevels) {
 			if (obj.data.body !== "[deleted]" && obj.data.body !== undefined) {
 				const imageUrl = extractImageLink(obj.data.body);
 				const imageTypeAndLink = getImageTypeAndLink(imageUrl);
-				embedImage(imageTypeAndLink, count);
+				embedImage(imageTypeAndLink, obj.data, count);
 				count++;
 			}	
 		})
@@ -121,7 +123,6 @@ function getImageTypeAndLink(url) {
     }
     //image in Imgur album
     else if (url.match(/imgur.com\/a\/.+/)) {
-    	// console.log(url);
     	url = url.match(/imgur.com\/a\/[a-zA-Z0-9]+/)[0];
     	const id = getImgurId(url);
     	return ["imgurAlbum", "album", id];
@@ -143,27 +144,45 @@ function getImageTypeAndLink(url) {
   	}
 }
 
-function embedImage(imageTypeAndLink, count) {
+function embedImage(imageTypeAndLink, data, count) {
 	//make API call to Imgur to get image from album or gallery
 	if (imageTypeAndLink[0] === "imgurAlbum" || imageTypeAndLink[0] === "imgurGallery") {
-		embedImgur(imageTypeAndLink[2], imageTypeAndLink[1], count);
+		embedImgur(imageTypeAndLink[2], imageTypeAndLink[1], data, count);
 	}
 	else if (imageTypeAndLink[0] === "gifv") {
-		embedGifv(imageTypeAndLink[1], count);
+		embedGifv(imageTypeAndLink[1], data, count);
 	}
 	//format gif from Gfycat
 	else if (imageTypeAndLink[0] === "gfycat") {
-		embedGfycat(imageTypeAndLink[1], count)
+		embedGfycat(imageTypeAndLink[1], data, count)
 	}
 	else {
-		embedDirectLink(imageTypeAndLink[1], count);
+		embedDirectLink(imageTypeAndLink[1], data, count);
 	}
 }
 
-function embedDirectLink(imageUrl, count) {
-	$("#result").append("<div id='" 
+function getLink(data) {
+
+	if (data.permalink) {
+		return "<div class='pic-info'>" 
+		+ "<a class='thread-link' href='http://www.reddit.com" 
+		+ data.permalink + "'>"
+		+ data.title
+		+ "</a>"
+		+ "<br>by " + data.author
+		+ "</div>";
+	}
+	return "";
+}
+
+function embedDirectLink(imageUrl, data, count) {
+	const link = getLink(data);
+
+	$("#result").append("<div class='img-container' id='" 
 		+ count + "'><img src='" 
-		+ imageUrl + "'></div");
+		+ imageUrl + "'>"
+		+ link
+		+"</div");
 }
 
 function embedComment(commentNumber, commentData, level) {
@@ -194,13 +213,17 @@ function traverseComments(json, level, maxLevel) {
 	}
 }
 
-function embedImgur(id, type, count) {
+function embedImgur(id, type, data, count) {
+	const link = getLink(data);
+
 	//make API call to Imgur to get image from
 	//album or gallery
 	getImgurImage(id, type, function(imageId) {
-		$("#result").append("<div id='" 
+		$("#result").append("<div class='img-container' id='" 
 		+ count + "'><img src='" + "http://imgur.com/" 
-		+ imageId + ".jpg" + "'></div>");
+		+ imageId + ".jpg" + "'>" 
+		+ link
+		+"</div>");
 		//need to sort images after since images 
 		//displayed from API call to Imgur will 
 		//load last
@@ -209,14 +232,17 @@ function embedImgur(id, type, count) {
 	})
 }
 
-function embedGifv(id, count) {
-	$("#result").append("<div id='"
+function embedGifv(id, data, count) {
+	const link = getLink(data);
+
+	$("#result").append("<div class='img-container' id='"
 		+ count + "'><video autoplay loop>"
 		+ "<source src='" + "http://i.imgur.com/" + id + "webm" 
 		+ "' type='video/webm'>"
 		+ "<source src='" + "http://i.imgur.com/" + id + "mp4" 
 		+ "' type='video/mp4'>"
 		+ "</video>"
+		+ link
 		+ "</div>");
 
 	setTimeout(function () {      
@@ -224,7 +250,9 @@ function embedGifv(id, count) {
 	}, 500);
 }
 
-function embedGfycat(url, count) {
+function embedGfycat(url, data, count) {
+	const link = getLink(data);
+
 	//char position of path
 	const pathPos = url.indexOf("gfycat.com/") + 11;
 	//get string containing path and query string
@@ -240,7 +268,9 @@ function embedGfycat(url, count) {
 	$("#result").append("<div class='gfycat' id='" 
 		+ count + "'><iframe src='" 
 		+ gfycatUrl
-		+ "' class='gfycat-iframe' frameborder='0'></iframe></div>");
+		+ "' class='gfycat-iframe' frameborder='0'></iframe>"
+		+ link
+		+"</div>");
 }
 
 function extractImageLink(text) {
@@ -294,7 +324,7 @@ return {
 	displayButtons: displayButtons,
 	formatJsonUrl: formatJsonUrl,
 	displayImages: displayImages,
-	displayComments: displayComments,
+	displayComments: displayComments
 }
 
 })();

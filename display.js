@@ -12,9 +12,10 @@ function sortImages() {
 }
 
 function removeBrokenImages() {
-	$("img").each(function () {
+	$("img").each(function () {		  
 	  this.onerror = function() {
-	    $(this).hide();
+	    const parent = $(this).parent("div");
+	    parent.remove();
 	  };
 	});
 }

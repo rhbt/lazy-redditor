@@ -34,6 +34,7 @@ Popup = {
 			//adds listener so pictures can be resized by double
 			//and single clicks
 			imageResizeListener();
+
 	  });
 	});
 
@@ -47,9 +48,20 @@ Popup = {
 		});
 	});
 
-
 	$(document).on("click", "#clear", function() {
 		display.clearLastResult();
+	})
+
+	$(document).on("click", "a", function() {
+	  const url = $(this).attr("href");
+	  const queryInfo = {
+	    active: true,
+	    currentWindow: true
+	  };
+	  chrome.tabs.query(queryInfo, function(tabs) {
+	    const tab = tabs[0];
+	    chrome.tabs.update(tab.id, {url: url});
+	  });
 	})
 
 },
